@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Floor797 Reference</title>
+    <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+    <header class="header">
+        <div class="header__inner">
+            <nav class="header__menu">
+                <ul class="header__menu-list">
+                    <li class="header__menu-item">
+                        <button class="header__menu-button button" data-project="aboutProject">
+                            О проекте
+                        </button>
+                    </li>
+                    <li class="header__menu-item">
+                        <button class="header__menu-button button" data-project="updateProject">
+                            Обновления
+                        </button>
+                    </li>
+                    <li class="header__menu-item">
+                        <button class="header__menu-button button">
+                            GitHub
+                        </button>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+    <div class="modal" id="modal">
+        <div class="modal-content">
+            <h2 class="modal-title h2" id="modalTitle"></h2>
+            <p class="modal-description" id="modalDescription"></p>
+            <div class="closeBtn" id="closeBtn"></div>
+        </div>
+    </div>
+    <main>
+        <canvas id="gifCanvas"></canvas>
+    </main>
+    <script src="./main.js"></script>
+</body>
+</html>
