@@ -1,0 +1,66 @@
+.modal {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100vh;
+    pointer-events: none;
+    opacity: 0;
+    transition: var(--transition-duration);
+    color: var(--color-white);
+    z-index: 100;
+}
+.modal-content {
+    position: relative;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    background-color: rgba(0, 0, 0, 0.5);
+    max-width: var(--container-width);
+    max-height: 400px;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    text-transform: uppercase;
+    padding-inline: var(--padd-x);
+    border-radius: 30px;
+}
+.modal-description {
+    width: 100%;
+    padding-top: 10px;
+    line-height: 125%;
+    font-weight: 300;
+}
+.modal.open {
+    opacity: 1;
+    pointer-events: auto;
+}
+.closeBtn {
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 30px;
+    height: 30px;
+    right: 30px;
+    top: 30px;
+    cursor: pointer;
+    background-color: var(--color-white);
+    padding: 10px;
+    border-radius: var(--border-radius-10);
+}
+.closeBtn::before, .closeBtn::after {
+    width: 30px;
+    content: "";
+    position: absolute;
+    height: 3px;
+    background-color: var(--backgroud-body);
+}
+.closeBtn::before {
+    transform: rotate(45deg);
+}
+.closeBtn::after {
+    transform: rotate(-45deg);
+}
