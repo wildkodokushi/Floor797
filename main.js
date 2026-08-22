@@ -1,4 +1,3 @@
-const buttons = document.querySelectorAll(".header__menu-button");
 const modal = document.getElementById("modal");
 const modalTitle = document.getElementById("modalTitle");
 const modalDescription = document.getElementById("modalDescription");
@@ -6,28 +5,30 @@ const modalDescription = document.getElementById("modalDescription");
 const canvas = document.getElementById("gifCanvas");
 const ctx = canvas.getContext("2d");
 
-function resizeCanvas () {
+let projectData = null;
+const spriteCashe = {};
+let lastTime = 0;
+
+const camera = {
+    x : 0,
+    y : 0,
+    zoom : 3.0,
+    isDragging : false,
+    startX : 0,
+    startY : 0,
+    minZoom : 0.5,
+    maxZoom : 10.0
+}
+
+function handleWindowResize () {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
 
     ctx.imageSmoothingEnabled = false;
 }
 
-resizeCanvas();
-
-window.addEventListener("resize", resizeCanvas);
-
-let projectData = null;
-const spriteCashe = {};
-
-let lastTime = 0;
-
-let cameraX = 0;
-let cameraY = 0;
-let currentZoom = 3.0;
-let isDragging = false;
-let startX = 0
-let startY = 0;
+handleWindowResize();
+window.addEventListener("resize", handleWindowResize);
 
 async function loadingProjectData () {
     try {
@@ -38,8 +39,6 @@ async function loadingProjectData () {
         }
 
         projectData = await response.json();
-
-        initButton();
 
         const spriteList = projectData.SPRITES
         const loadPromises = [];
@@ -72,8 +71,8 @@ function animate (timestamp) {
     
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.save();
-    ctx.translate(cameraX, cameraY);
-    ctx.scale(currentZoom, currentZoom);
+    ctx.translate(camera.x, camera.y);
+    ctx.scale(camera.zoom, camera.zoom);
     ctx.imageSmoothingEnabled = false;
     
     const spritesList = projectData.SPRITES;
@@ -105,72 +104,73 @@ function animate (timestamp) {
     
 }
 
-function initButton () {
-    buttons.forEach(btn => {
-        btn.addEventListener("click", (event) => {
-            const projectKey = event.currentTarget.dataset.project;
+document.addEventListener("click", (event) => {
+    const target = event.target;
 
-            if(projectKey && projectData[projectKey]) {
-                const data = projectData[projectKey];
+    if(target.classList.contains("header__menu-button")) {
+        const projectKey = target.dataset.project;
 
-                modalTitle.textContent = data.title;
-                modalDescription.textContent = data.description;
+        if(projectKey && projectData[projectKey]) {
+            const data = projectData[projectKey];
 
-                modal.classList.add('open');
-                document.body.classList.add("lock");
-            }
-        })
+            modalTitle.textContent = data.title;
+            modalDescription.textContent = data.description;
+
+            modal.classList.add('open');
+            document.body.classList.add("lock");
+        }
+    }
+
+    if(target.id === 'closeBtn' || target === modal) {
+        modal.classList.remove("open");
+        document.body.classList.remove("lock")
+    }
+})
+
+function initCameraEvents () {
+    canvas.addEventListener("mousedown", (event) => {
+        camera.isDragging = true;
+    
+        camera.startX = event.clientX - camera.x;
+        camera.startY = event.clientY - camera.y;
     });
+
+    window.addEventListener("mousemove", (event) => {
+        if(camera.isDragging === false) return;
+    
+        camera.x = event.clientX - camera.startX;
+        camera.y = event.clientY - camera.startY;
+    });
+
+    window.addEventListener("mouseup", () => {
+        camera.isDragging = false;
+    });
+
+    window.addEventListener("wheel", (event) => {
+        if(modal.classList.contains("open")) return;
+        // event.preventDefault();
+    
+        const mouseX = event.clientX;
+        const mouseY = event.clientY;
+    
+        const canvasX = (mouseX - camera.x) / camera.zoom;
+        const canvasY = (mouseY - camera.y) / camera.zoom;
+    
+        const oldZoom = camera.zoom;
+    
+        if(event.deltaY < 0) {
+            camera.zoom += 0.5;
+        } else {
+            camera.zoom -= 0.5;
+        }
+    
+        camera.zoom = Math.min(camera.maxZoom, Math.max(camera.minZoom, camera.zoom));
+    
+        camera.x = mouseX - canvasX * camera.zoom;
+        camera.y = mouseY - canvasY * camera.zoom;
+    
+    }, { passive: false });
 }
 
-document.getElementById("closeBtn").addEventListener("click", () => {
-    modal.classList.remove("open");
-    document.body.classList.remove("lock")
-});
-
-modal.addEventListener("click", (event) => {
-    if(event.target === modal) {
-        modal.classList.remove("open");
-    }
-});
-
-canvas.addEventListener("mousedown", (event) => {
-    isDragging = true;
-
-    startX = event.clientX - cameraX;
-    startY = event.clientY - cameraY;
-});
-window.addEventListener("mousemove", (event) => {
-    if(isDragging === false) return;
-
-    cameraX = event.clientX - startX;
-    cameraY = event.clientY - startY;
-});
-window.addEventListener("mouseup", () => {
-    isDragging = false;
-});
-window.addEventListener("wheel", (event) => {
-    event.preventDefault();
-
-    const mouseX = event.clientX;
-    const mouseY = event.clientY;
-
-    const canvasX = (mouseX - cameraX) / currentZoom;
-    const canvasY = (mouseY - cameraY) / currentZoom;
-
-    const oldZoom = currentZoom;
-
-    if(event.deltaY < 0) {
-        currentZoom += 0.5;
-    } else {
-        currentZoom -= 0.5;
-    }
-
-    currentZoom = Math.min(10.0, Math.max(0.5, currentZoom));
-
-    cameraX = mouseX - canvasX * currentZoom;
-    cameraY = mouseY - canvasY * currentZoom;
-
-}, { passive: false });
-
+initCameraEvents();
 loadingProjectData();
