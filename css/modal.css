@@ -1,13 +1,13 @@
 .modal {
     position: fixed;
     inset: 0;
-    width: 100%;
     height: 100vh;
     pointer-events: none;
     opacity: 0;
     transition: var(--transition-duration);
     color: var(--color-white);
     z-index: 100;
+    padding-inline: var(--padd-x);
 }
 .modal-content {
     position: relative;
@@ -22,7 +22,7 @@
     justify-content: center;
     flex-direction: column;
     align-items: center;
-    text-align: center;
+    text-align: justify;
     text-transform: uppercase;
     padding-inline: var(--padd-x);
     border-radius: 30px;
@@ -32,6 +32,10 @@
     padding-top: 10px;
     line-height: 125%;
     font-weight: 300;
+    font-size: clamp(14px, 1.14vw, 16px);
+}
+.modal-title {
+    font-size: clamp(18px, 1.7vw, 24px);
 }
 .modal.open {
     opacity: 1;
@@ -50,6 +54,7 @@
     background-color: var(--color-white);
     padding: 10px;
     border-radius: var(--border-radius-10);
+    mix-blend-mode: difference;
 }
 .closeBtn::before, .closeBtn::after {
     width: 30px;
@@ -63,4 +68,22 @@
 }
 .closeBtn::after {
     transform: rotate(-45deg);
+}
+@media (max-width: 767px) {
+    .modal-content {
+        max-height: max-content;
+        padding-block: 20px;
+        padding-left: 20px;
+    }
+    .modal-title {
+        padding-right: 75px;
+        padding-bottom: 15px;
+    }
+    .closeBtn {
+        width: 20px;
+        height: 20px;
+        border-radius: var(--border-radius-5);
+        top: 20px;
+        right: 20px;
+    }
 }

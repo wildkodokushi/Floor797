@@ -106,6 +106,8 @@ function animate (timestamp) {
 
 document.addEventListener("click", (event) => {
     const target = event.target;
+    const body = document.body;
+    const updatesBoard = document.getElementById("updates");
 
     if(target.classList.contains("header__menu-button")) {
         const projectKey = target.dataset.project;
@@ -117,14 +119,22 @@ document.addEventListener("click", (event) => {
             modalDescription.textContent = data.description;
 
             modal.classList.add('open');
-            document.body.classList.add("lock");
+            body.classList.add("lock");
         }
     }
 
     if(target.id === 'closeBtn' || target === modal) {
         modal.classList.remove("open");
-        document.body.classList.remove("lock")
+        body.classList.remove("lock")
     }
+
+    if(target.id === 'openUpdates') {
+        if(modal.classList.contains("open")) {
+            modal.classList.remove("open");
+        }
+
+        updatesBoard.classList.toggle("openUpd");
+    } 
 })
 
 function initCameraEvents () {
@@ -171,6 +181,8 @@ function initCameraEvents () {
     
     }, { passive: false });
 }
+
+stopPropogation();
 
 initCameraEvents();
 loadingProjectData();
